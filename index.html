@@ -1,0 +1,173 @@
+Made By Nolan Neiss (T-STI2D SIN)
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Compteur de Votes CVL</title>
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Compteur de Votes CVL en Ligne</h1>
+    <p>Entrez le nombre de candidats : <input type="number" id="nombreZones"></p>
+    <button id="creerZones">Creer</button>
+
+    <div id="zonesDeTexteEtCompteurs"></div>
+    
+    <h2>Votes Blanc</h2>
+    <p>Nombre de votes blancs : <span id="compteurBlancs">0</span></p>
+    <p>Nombre de votants : <input type="number" id="nombreVotants"></p>
+    <button id="ajouterBlanc">Ajouter 1</button>
+    <button id="retirerBlanc">Retirer 1</button>
+    <p>Pourcentage de votes blancs : <span id="pourcentageBlancs">0%</span></p>
+
+    <h3>Votes Nuls</h3>
+    <p>Nombre de votes nuls : <span id="compteurNul">0</span></p>
+    <button id="ajouterNul">Ajouter 1</button>
+    <button id="retirerNul">Retirer 1</button>
+
+    <script>
+        // Nombre total de votes
+        let totalVotes = 0;
+        let nombreVotants = 0;
+
+        document.getElementById("creerZones").addEventListener("click", function() {
+            document.getElementById("zonesDeTexteEtCompteurs").innerHTML = "";
+
+            const nombreZones = parseInt(document.getElementById("nombreZones").value);
+            totalVotes = 0;
+
+            for (let i = 0; i < nombreZones; i++) {
+                const divZoneEtCompteur = document.createElement("div");
+
+                const zoneDeTexte = document.createElement("textarea");
+                zoneDeTexte.setAttribute("id", "zoneDeTexte" + (i + 1));
+                zoneDeTexte.setAttribute("placeholder", "Candidat #" + (i + 1));
+                divZoneEtCompteur.appendChild(zoneDeTexte);
+
+                // Bloc qui permet le compteur
+                const compteur = document.createElement("span");
+                compteur.setAttribute("id", "compteur" + (i + 1));
+                compteur.textContent = "Votes: 0";
+                divZoneEtCompteur.appendChild(compteur);
+
+                const boutonAjouter = document.createElement("button");
+                boutonAjouter.textContent = "Ajouter 1";
+                divZoneEtCompteur.appendChild(boutonAjouter);
+
+                const boutonRetirer = document.createElement("button");
+                boutonRetirer.textContent = "Retirer 1";
+                divZoneEtCompteur.appendChild(boutonRetirer);
+
+                // Ajouter un vote (met a jour le pourcentage)
+                boutonAjouter.addEventListener("click", function() {
+                const compteurValue = parseInt(compteur.textContent.split(" ")[1]);
+                compteur.textContent = "Votes: " + (compteurValue + 1);
+                totalVotes++;
+                updatePourcentageBlancs();
+                });
+                
+                // Foction qui empeche le compteur de passer en dessous de zero lors de l'appui du bouton Retirer
+                boutonRetirer.addEventListener("click", function() {
+                    const compteurValue = parseInt(compteur.textContent.split(" ")[1]);
+                    if (compteurValue > 0) {
+                        compteur.textContent = "Votes: " + (compteurValue - 1);
+                        totalVotes--;
+                        updatePourcentageBlancs();
+                    }
+            });
+
+                document.getElementById("zonesDeTexteEtCompteurs").appendChild(divZoneEtCompteur);
+            }
+
+            // ligne qui permet de mettre a jour le pourcentage
+            updatePourcentageBlancs();
+        });
+
+        // Gestion du nombre de votants
+        document.getElementById("nombreVotants").addEventListener("input", function() {
+            nombreVotants = parseInt(this.value);
+            updatePourcentageBlancs();
+        });
+
+        // vote blanc
+        document.getElementById("ajouterBlanc").addEventListener("click", function() {
+            const compteurBlancs = document.getElementById("compteurBlancs");
+            const compteurValue = parseInt(compteurBlancs.textContent);
+            compteurBlancs.textContent = compteurValue + 1;
+            totalVotes++;
+            updatePourcentageBlancs();
+        });
+
+        // Retirer un vote blanc
+        document.getElementById("retirerBlanc").addEventListener("click", function() {
+            const compteurBlancs = document.getElementById("compteurBlancs");
+            const compteurValue = parseInt(compteurBlancs.textContent);
+            if (compteurValue >> 0) {
+                compteurBlancs.textContent = compteurValue - 1;
+                totalVotes--;
+                updatePourcentageBlancs();
+            }
+        });
+
+        function updatePourcentageBlancs() {
+            const compteurBlancs = parseInt(document.getElementById("compteurBlancs").textContent);
+            const pourcentageBlancs = ((compteurBlancs / nombreVotants) * 100).toFixed(2); // Calcul du pourcentage en fonction du nombre de votants
+            const pourcentageBlancsElement = document.getElementById("pourcentageBlancs");
+        
+            if (pourcentageBlancs >= 40) {
+                pourcentageBlancsElement.style.color = "red";
+            } else {
+                pourcentageBlancsElement.style.color = "black";
+            }
+        
+            if (nombreVotants > 0) {
+                pourcentageBlancsElement.textContent = pourcentageBlancs + "% (par rapport aux votants)";
+            } else {
+                pourcentageBlancsElement.textContent = pourcentageBlancs + "%";
+            }
+        }
+        
+    if (nombreVotants > 0) {
+        const pourcentageParRapportAuNombreDeVotants = ((compteurBlancs + totalVotes) / nombreVotants * 100).toFixed(2);
+        pourcentageBlancsElement.textContent = pourcentageBlancs + "% (par rapport aux votants) - " + pourcentageParRapportAuNombreDeVotants + "% (par rapport au nombre de votants)";
+    } else {
+        pourcentageBlancsElement.textContent = pourcentageBlancs + "%";
+    }
+
+        // vote nul
+        document.getElementById("ajouterNul").addEventListener("click", function() {
+            const compteurNul = document.getElementById("compteurNul");
+            const compteurValue = parseInt(compteurNul.textContent);
+            compteurNul.textContent = compteurValue + 1;
+            totalVotes++;
+        });
+
+        // Retirer un vote nul
+        document.getElementById("retirerNul").addEventListener("click", function() {
+            const compteurNul = document.getElementById("compteurNul");
+            const compteurValue = parseInt(compteurNul.textContent);
+            if (compteurValue > 0) {
+                compteurNul.textContent = compteurValue - 1;
+                totalVotes--;
+            }
+        // Gestion du bouton de remise à zéro du compteur de votes blancs
+        document.getElementById("resetCompteurBlancs").addEventListener("click", function() {
+        const compteurBlancs = document.getElementById("compteurBlancs");
+        compteurBlancs.textContent = "0";
+        totalVotes -= parseInt(compteurBlancs.textContent);
+        updatePourcentageBlancs();
+});
+        });
+    </script>
+</body>
+</html>
+
+<script>
+    //Le contenu utilisé ici et créer est libre d'utilisation et de modification. Le code source est mis a disposition de tous !
+    //certaines recherches sur le web pour des variables et aides sur les couleurs CSS ont été faites
+    //Contenu créer pour but de faciliter l'utilisation et le compte de votes pour les éléctions du CVL du Lycée les Lombards.
+    //Ce code est mis à jour régulièrement, n'hésitez pas a aller voir mon profil GitHub: MaxKoDev
+
+    //VotingCVL / Version 1.2
+</script>

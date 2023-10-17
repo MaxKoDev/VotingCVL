@@ -1,0 +1,22 @@
+body {
+    font-family: sans-serif;
+    margin: 0; /* Vous ne connaissez pas encore cette propriété mais elle permet de s'assurer que nos éléments prennent bien toute la largeur de la page */
+    background-image: url('image.png');
+    background-repeat: no-repeat;
+    image-rendering: auto;
+    text-align: center;
+}
+
+.banniere {
+    width: 2184px;
+    height: 1224px;
+    text-align: center;
+}
+
+h1 {
+    color: rgb(255, 255, 255);
+    text-align: center;
+}
+
+.titre
+{color: rgb(255, 0, 0)}
